@@ -1,22 +1,3 @@
-<script lang="ts" context="module">
-	import { z } from 'zod';
-
-	const productSchema = z.object({
-		priceId: z.string({
-			required_error: 'Price Id is required'
-		}),
-		quantity: z
-			.number({
-				required_error: 'Quantity is required'
-			})
-			.min(1, 'Quantity must be greater than 0')
-			.max(5, 'Quantity must be less than 6')
-			.default(1)
-	});
-
-	type ProductSchema = typeof productSchema;
-</script>
-
 <script lang="ts">
 	import { zod, zodClient } from 'sveltekit-superforms/adapters';
 	import {
@@ -29,28 +10,37 @@
 	import { Button } from '$lib/components/ui/button';
 	import PlusIcon from 'lucide-svelte/icons/plus';
 	import { Input } from '$lib/components/ui/input';
+	import { type AddToCartSchema, addToCartSchema } from '$lib/schemas';
+	import { addToCart } from '$lib/stores';
 
-	let data: SuperValidated<Infer<ProductSchema>> = defaults(zod(productSchema));
-	export let prices: { id: string; amount: number }[];
+	let data: SuperValidated<Infer<AddToCartSchema>> = defaults(zod(addToCartSchema));
+	export let product: Product;
 
-	const pricesSelect = prices.map((price) => ({
+	const pricesSelect = product.prices.map((price) => ({
 		label: `${price.amount} DZD`,
 		value: price.id
 	}));
 
 	const form = superForm(data, {
+		validators: zodClient(addToCartSchema),
 		SPA: true,
-		validators: zodClient(productSchema),
+		resetForm: false,
+		clearOnSubmit: 'errors-and-message',
 		onUpdate({ form }) {
-			if (form.valid) {
-				// TODO: add to cart
-			}
+			if (!form.valid) return;
+
+			const newCartProduct: CartProduct = {
+				...product,
+				...form.data
+			};
+
+			addToCart(newCartProduct);
 		}
 	});
 
 	const { form: formData, enhance } = form;
 
-	if (prices.length > 0) {
+	if (product.prices.length > 0) {
 		$formData.priceId = pricesSelect[0].value;
 	}
 
@@ -64,7 +54,7 @@
 	}
 </script>
 
-<form method="POST" action="?/add" class="space-y-6" use:enhance>
+<form method="POST" class="space-y-6" use:enhance>
 	<Form.Field {form} name="priceId">
 		<Form.Control let:attrs>
 			<Form.Label>Price</Form.Label>

@@ -3,9 +3,9 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import SearchIcon from 'lucide-svelte/icons/search';
-	import CartIcon from 'lucide-svelte/icons/shopping-cart';
 	import { page } from '$app/stores';
 	import { fade } from 'svelte/transition';
+	import ShoppingCartSheet from '$lib/components/store/shopping-cart-sheet.svelte';
 </script>
 
 <div class="min-h-screen space-y-2">
@@ -23,7 +23,7 @@
 		{/if}
 
 		<div class="flex w-full justify-end">
-			<Button size="icon"><CartIcon class="h-5" /></Button>
+			<ShoppingCartSheet />
 		</div>
 	</header>
 

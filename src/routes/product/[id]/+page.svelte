@@ -51,7 +51,7 @@
 		<div class="flex basis-full flex-col gap-4 p-4">
 			<h2 class="text-5xl font-semibold">{data.product.name}</h2>
 			<Separator />
-			<ProductForm prices={data.product.prices} />
+			<ProductForm product={data.product} />
 		</div>
 	</Card.Root>
 </main>

@@ -1,3 +1,4 @@
+import { env } from '$env/dynamic/private';
 import { PRIVATE_CHARGILYPAY_API_KEY } from '$env/static/private';
 import { ChargilyClient } from '@chargily/chargily-pay';
 
@@ -5,17 +6,6 @@ export const client = new ChargilyClient({
 	api_key: PRIVATE_CHARGILYPAY_API_KEY,
 	mode: 'test' // Change to 'live' when deploying your application
 });
-
-export type Product = {
-	id: string
-	name: string
-	description: string | null
-	image: string | string[] | null
-	prices: {
-		id: string
-		amount: number
-	}[]
-}
 
 export async function getProductsList(): Promise<Product[]> {
 	const items = (await client.listProducts()).data
@@ -56,4 +46,24 @@ export async function getProduct(id: string): Promise<Product> {
 			amount: price.amount
 		})).sort((a, b) => a.amount - b.amount)
 	}
+}
+
+const siteURL = env.VERCEL_URL || 'http://localhost:8080'
+
+export async function getCheckoutURL(items: { priceId: string, quantity: number }[]) {
+	const cart = items.map(({ priceId, quantity }) => ({
+		price: priceId,
+		quantity
+	}))
+
+	const newCheckout = await client.createCheckout({
+		items: cart,
+		success_url: new URL('/checkout/success', siteURL).href,
+		failure_url: new URL('/checkout/failure', siteURL).href,
+		payment_method: 'edahabia',
+		locale: 'en',
+		pass_fees_to_customer: true,
+	});
+
+	return newCheckout.checkout_url
 }
