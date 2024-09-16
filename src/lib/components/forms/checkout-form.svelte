@@ -12,18 +12,18 @@
 	import { cartStore } from '$lib/stores';
 
 	let data: SuperValidated<Infer<CheckoutSchema>> = defaults(zod(checkoutSchema));
-	export let items: { priceId: string; quantity: number }[];
 
 	const form = superForm(data, {
 		validators: zodClient(checkoutSchema),
-		dataType: 'json',
-		onSubmit() {
-			cartStore.reset();
-		}
+		dataType: 'json'
 	});
 
 	const { form: formData, enhance, delayed, message } = form;
-	$formData.items = items;
+
+	$: $formData.items = $cartStore.map((product) => ({
+		priceId: product.priceId,
+		quantity: product.quantity
+	}));
 </script>
 
 <form class="w-full space-x-2" method="POST" action="/checkout" use:enhance>

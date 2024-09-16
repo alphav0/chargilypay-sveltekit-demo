@@ -10,19 +10,11 @@
 
 	let open = false;
 
-	function calculateTotal() {
-		return $cartStore.reduce(
-			(acc, item) =>
-				acc + (item.prices.find((price) => price.id === item.priceId)?.amount || 0) * item.quantity,
-			0
-		);
-	}
-
-	$: items =
-		$cartStore.map((item) => ({
-			priceId: item.priceId,
-			quantity: item.quantity
-		})) || [];
+	$: totalPrice = $cartStore.reduce(
+		(acc, item) =>
+			acc + (item.prices.find((price) => price.id === item.priceId)?.amount || 0) * item.quantity,
+		0
+	);
 </script>
 
 <Sheet.Root bind:open>
@@ -52,13 +44,13 @@
 				<div class="flex items-center justify-between gap-2">
 					<span>Total price:</span>
 					{#if $cartStore.length > 0}
-						<p class="text-lg font-semibold">{calculateTotal().toFixed(2)} DZD</p>
+						<p class="text-lg font-semibold">{totalPrice.toFixed(2)} DZD</p>
 					{:else}
 						<p class="text-lg font-semibold">0 DZD</p>
 					{/if}
 				</div>
 				<Separator />
-				<CheckoutForm {items} />
+				<CheckoutForm />
 			</div>
 		</div>
 	</Sheet.Content>

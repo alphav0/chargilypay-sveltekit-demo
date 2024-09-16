@@ -15,17 +15,12 @@
 		</div>
 		<div class="mt-2 flex items-center justify-between">
 			<div class="flex items-center justify-between gap-2 rounded-xl bg-muted p-2">
-				<button class="rounded px-2" on:click={() => item.quantity < 5 && item.quantity++}>+</button
+				<button class="rounded px-2" on:click={() => cartStore.increaseQuantity(item.priceId)}
+					>+</button
 				>
 				<p class="font-medium">{item.quantity}</p>
-				<button
-					class="rounded px-2"
-					on:click={() => {
-						if (item.quantity > 0) {
-							item.quantity--;
-							if (item.quantity === 0) $cartStore = $cartStore.filter((i) => i !== item);
-						}
-					}}>-</button
+				<button class="rounded px-2" on:click={() => cartStore.decreaseQuantity(item.priceId)}
+					>-</button
 				>
 			</div>
 			{#if price}

@@ -11,7 +11,7 @@
 	import PlusIcon from 'lucide-svelte/icons/plus';
 	import { Input } from '$lib/components/ui/input';
 	import { type AddToCartSchema, addToCartSchema } from '$lib/schemas';
-	import { addToCart } from '$lib/stores';
+	import { cartStore } from '$lib/stores';
 
 	let data: SuperValidated<Infer<AddToCartSchema>> = defaults(zod(addToCartSchema));
 	export let product: Product;
@@ -34,7 +34,7 @@
 				...form.data
 			};
 
-			addToCart(newCartProduct);
+			cartStore.addToCart(newCartProduct);
 		}
 	});
 
